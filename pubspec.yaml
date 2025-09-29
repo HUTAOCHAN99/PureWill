@@ -61,6 +61,8 @@ flutter:
   assets:
     - assets/images/auth/bg.png 
     - assets/images/auth/icon.png 
+    - assets/images/auth/icon_walk.png 
+    - assets/images/auth/sun_icon.png
     
     
 

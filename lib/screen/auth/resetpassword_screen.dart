@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:purewill/screen/auth/register_screen.dart';
+import 'package:purewill/screen/auth/login_screen.dart';
 
-class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
+class ResetPasswordScreen extends StatelessWidget {
+  const ResetPasswordScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -70,10 +70,7 @@ class LoginScreen extends StatelessWidget {
                   ),
                 ),
 
-                SizedBox(
-                  height: screenHeight * 0.08,
-                ), // Spacing between logo and form
-                // Form section
+      
                 Expanded(
                   flex: 3,
                   child: Container(
@@ -101,7 +98,7 @@ class LoginScreen extends StatelessWidget {
                             children: [
                               // Icon container
                               Container(
-                                width: screenWidth * 0.15,
+                                width: screenWidth * 0.20,
                                 height: screenWidth * 0.15,
                                 decoration: BoxDecoration(
                                   color: const Color.fromRGBO(82, 140, 207, 1),
@@ -128,7 +125,7 @@ class LoginScreen extends StatelessWidget {
                                     width: screenWidth * 0.08,
                                     height: screenWidth * 0.08,
                                     child: Image.asset(
-                                      "assets/images/auth/icon_walk.png",
+                                      "assets/images/auth/sun_icon.png",
                                       fit: BoxFit.contain,
                                     ),
                                   ),
@@ -143,7 +140,7 @@ class LoginScreen extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    "Welcome Back",
+                                    "New",
                                     style: TextStyle(
                                       color: Colors.black,
                                       fontSize: screenWidth * 0.038,
@@ -152,16 +149,7 @@ class LoginScreen extends StatelessWidget {
                                     ),
                                   ),
                                   Text(
-                                    "Continue",
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: screenWidth * 0.038,
-                                      fontWeight: FontWeight.bold,
-                                      height: 1.1,
-                                    ),
-                                  ),
-                                  Text(
-                                    "Journey Sir",
+                                    "Beginning",
                                     style: TextStyle(
                                       color: Colors.black,
                                       fontSize: screenWidth * 0.038,
@@ -175,6 +163,54 @@ class LoginScreen extends StatelessWidget {
                           ),
 
                           SizedBox(height: screenHeight * 0.02),
+
+                          // Full Name TextField
+                          Container(
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: const Color.fromARGB(255, 254, 254, 254),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: const Color.fromARGB(217, 217, 217, 255),
+                                width: 1,
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: TextField(
+                                    style: const TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 16,
+                                    ),
+                                    decoration: InputDecoration(
+                                      border: InputBorder.none,
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                            horizontal: 16,
+                                            vertical: 8,
+                                          ),
+                                      hintText: "Enter full your name",
+                                      hintStyle: TextStyle(
+                                        color: Colors.grey[500],
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Icon(
+                                    Icons.person,
+                                    color: Colors.grey[600],
+                                    size: 18,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          SizedBox(height: 16),
 
                           // Email TextField dengan icon di kanan
                           Container(
@@ -271,34 +307,14 @@ class LoginScreen extends StatelessWidget {
                             ),
                           ),
 
-                          SizedBox(height: 8),
-
-                          // Forgot Password
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: GestureDetector(
-                              onTap: () {
-                                // Forgot password logic
-                              },
-                              child: const Text(
-                                "Forgot Password?",
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 12,
-                                  decoration: TextDecoration.underline,
-                                ),
-                              ),
-                            ),
-                          ),
-
                           SizedBox(height: 24),
 
-                          // Login button
+                          // Register button
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
                               onPressed: () {
-                                // Login logic
+                                // Register logic
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.black,
@@ -314,18 +330,18 @@ class LoginScreen extends StatelessWidget {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              child: const Text("Login"),
+                              child: const Text("Register"),
                             ),
                           ),
 
                           SizedBox(height: 16),
 
-                          // Register text
+                          // Login text
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               const Text(
-                                "Don't have an account? ",
+                                "Already have an account? ",
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 14,
@@ -336,12 +352,12 @@ class LoginScreen extends StatelessWidget {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => RegisterScreen(),
+                                      builder: (context) => LoginScreen(),
                                     ),
                                   );
                                 },
                                 child: const Text(
-                                  "Register",
+                                  "Login",
                                   style: TextStyle(
                                     color: Color.fromRGBO(
                                       82,

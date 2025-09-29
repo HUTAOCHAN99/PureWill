@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:purewill/screen/auth/register_screen.dart';
+import 'login_screen.dart';
 
-class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
+class RegisterScreen extends StatelessWidget {
+  const RegisterScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +24,7 @@ class LoginScreen extends StatelessWidget {
             padding: EdgeInsets.all(screenWidth * 0.06),
             child: Column(
               children: [
-                // Logo section
+                // Logo section - tetap sama
                 Expanded(
                   flex: 2,
                   child: Column(
@@ -70,12 +70,11 @@ class LoginScreen extends StatelessWidget {
                   ),
                 ),
 
-                SizedBox(
-                  height: screenHeight * 0.08,
-                ), // Spacing between logo and form
-                // Form section
+                SizedBox(height: screenHeight * 0.02), // Reduced spacing
+
+                // Form section - menggunakan ConstrainedBox agar tetap expand
                 Expanded(
-                  flex: 3,
+                  flex: 4, // Increased flex to give more space to form
                   child: Container(
                     width: double.infinity,
                     padding: EdgeInsets.all(screenWidth * 0.05),
@@ -128,22 +127,20 @@ class LoginScreen extends StatelessWidget {
                                     width: screenWidth * 0.08,
                                     height: screenWidth * 0.08,
                                     child: Image.asset(
-                                      "assets/images/auth/icon_walk.png",
+                                      "assets/images/auth/sun_icon.png",
                                       fit: BoxFit.contain,
                                     ),
                                   ),
                                 ),
                               ),
-                              SizedBox(
-                                width: 12,
-                              ), // Spacing antara icon dan teks
+                              SizedBox(width: 12),
                               // Teks di samping icon
                               Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    "Welcome Back",
+                                    "Create Your",
                                     style: TextStyle(
                                       color: Colors.black,
                                       fontSize: screenWidth * 0.038,
@@ -152,16 +149,7 @@ class LoginScreen extends StatelessWidget {
                                     ),
                                   ),
                                   Text(
-                                    "Continue",
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: screenWidth * 0.038,
-                                      fontWeight: FontWeight.bold,
-                                      height: 1.1,
-                                    ),
-                                  ),
-                                  Text(
-                                    "Journey Sir",
+                                    "Account",
                                     style: TextStyle(
                                       color: Colors.black,
                                       fontSize: screenWidth * 0.038,
@@ -176,9 +164,9 @@ class LoginScreen extends StatelessWidget {
 
                           SizedBox(height: screenHeight * 0.02),
 
-                          // Email TextField dengan icon di kanan
+                          // Full Name TextField
                           Container(
-                            height: 40,
+                            height: 50,
                             decoration: BoxDecoration(
                               color: const Color.fromARGB(255, 254, 254, 254),
                               borderRadius: BorderRadius.circular(8),
@@ -199,9 +187,57 @@ class LoginScreen extends StatelessWidget {
                                       border: InputBorder.none,
                                       contentPadding:
                                           const EdgeInsets.symmetric(
-                                            horizontal: 16,
-                                            vertical: 8,
-                                          ),
+                                        horizontal: 16,
+                                        vertical: 12,
+                                      ),
+                                      hintText: "Enter full your name",
+                                      hintStyle: TextStyle(
+                                        color: Colors.grey[500],
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Icon(
+                                    Icons.person,
+                                    color: Colors.grey[600],
+                                    size: 20,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          SizedBox(height: 16),
+
+                          // Email TextField
+                          Container(
+                            height: 50,
+                            decoration: BoxDecoration(
+                              color: const Color.fromARGB(255, 254, 254, 254),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: const Color.fromARGB(217, 217, 217, 255),
+                                width: 1,
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: TextField(
+                                    style: const TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 16,
+                                    ),
+                                    decoration: InputDecoration(
+                                      border: InputBorder.none,
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                        vertical: 12,
+                                      ),
                                       hintText: "Enter your email address",
                                       hintStyle: TextStyle(
                                         color: Colors.grey[500],
@@ -215,7 +251,7 @@ class LoginScreen extends StatelessWidget {
                                   child: Icon(
                                     Icons.email,
                                     color: Colors.grey[600],
-                                    size: 18,
+                                    size: 20,
                                   ),
                                 ),
                               ],
@@ -224,9 +260,9 @@ class LoginScreen extends StatelessWidget {
 
                           SizedBox(height: 16),
 
-                          // Password TextField dengan icon di kanan
+                          // Password TextField
                           Container(
-                            height: 40,
+                            height: 50,
                             decoration: BoxDecoration(
                               color: const Color.fromARGB(255, 254, 254, 254),
                               borderRadius: BorderRadius.circular(8),
@@ -248,9 +284,9 @@ class LoginScreen extends StatelessWidget {
                                       border: InputBorder.none,
                                       contentPadding:
                                           const EdgeInsets.symmetric(
-                                            horizontal: 16,
-                                            vertical: 8,
-                                          ),
+                                        horizontal: 16,
+                                        vertical: 12,
+                                      ),
                                       hintText: "Create a Password",
                                       hintStyle: TextStyle(
                                         color: Colors.grey[500],
@@ -264,47 +300,27 @@ class LoginScreen extends StatelessWidget {
                                   child: Icon(
                                     Icons.lock,
                                     color: Colors.grey[600],
-                                    size: 18,
+                                    size: 20,
                                   ),
                                 ),
                               ],
                             ),
                           ),
 
-                          SizedBox(height: 8),
-
-                          // Forgot Password
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: GestureDetector(
-                              onTap: () {
-                                // Forgot password logic
-                              },
-                              child: const Text(
-                                "Forgot Password?",
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 12,
-                                  decoration: TextDecoration.underline,
-                                ),
-                              ),
-                            ),
-                          ),
-
                           SizedBox(height: 24),
 
-                          // Login button
+                          // Register button
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
                               onPressed: () {
-                                // Login logic
+                                // Register logic
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.black,
                                 foregroundColor: Colors.white,
                                 padding: const EdgeInsets.symmetric(
-                                  vertical: 12,
+                                  vertical: 14,
                                 ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8),
@@ -314,18 +330,18 @@ class LoginScreen extends StatelessWidget {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              child: const Text("Login"),
+                              child: const Text("Register"),
                             ),
                           ),
 
                           SizedBox(height: 16),
 
-                          // Register text
+                          // Login text
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               const Text(
-                                "Don't have an account? ",
+                                "Already have an account? ",
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 14,
@@ -336,43 +352,38 @@ class LoginScreen extends StatelessWidget {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => RegisterScreen(),
+                                      builder: (context) => LoginScreen(),
                                     ),
                                   );
                                 },
                                 child: const Text(
-                                  "Register",
+                                  "Login",
                                   style: TextStyle(
-                                    color: Color.fromRGBO(
-                                      82,
-                                      140,
-                                      207,
-                                      1,
-                                    ), // warna teks
+                                    color: Color.fromRGBO(82, 140, 207, 1),
                                     fontWeight: FontWeight.bold,
                                     fontSize: 14,
                                     decoration: TextDecoration.underline,
-                                    decorationColor: Color.fromRGBO(
-                                      82,
-                                      140,
-                                      207,
-                                      1,
-                                    ), // warna underline
+                                    decorationColor: Color.fromRGBO(82, 140, 207, 1),
                                   ),
                                 ),
                               ),
                             ],
                           ),
+
+                          // Tambahkan spacer di dalam form untuk push content ke atas
+                          SizedBox(height: screenHeight * 0.02),
                         ],
                       ),
                     ),
                   ),
                 ),
-                // Help section
-                Expanded(
-                  flex: 1,
+
+                SizedBox(height: screenHeight * 0.04),
+
+                // Help section - menggunakan Container dengan margin
+                Container(
+                  margin: EdgeInsets.only(top: screenHeight * 0.02, bottom: screenHeight * 0.02),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
                         "Need help?",
