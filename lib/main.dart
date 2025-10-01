@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:purewill/screen/auth/login_screen.dart';
 import 'package:purewill/screen/auth/register_screen.dart';
+import 'package:purewill/screen/auth/resetpassword_screen.dart'; 
+
 
 void main() {
   runApp(const MyApp());
@@ -20,6 +22,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/login': (context) => LoginScreen(),
         '/register': (context) => RegisterScreen(),
+        '/reset-password': (context) => ResetPasswordScreen(), // Tambah route
       },
     );
   }

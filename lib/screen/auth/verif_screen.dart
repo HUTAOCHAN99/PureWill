@@ -1,16 +1,50 @@
-import 'package:flutter/material.dart';
-import 'package:purewill/screen/auth/verif_screen.dart';
-import 'login_screen.dart';
+import 'dart:async';
 
-class ResetPasswordScreen extends StatefulWidget {
-  const ResetPasswordScreen({super.key});
+import 'package:flutter/material.dart';
+import 'newpassword_screen.dart';
+
+class VerificationScreen extends StatefulWidget {
+  final String email;
+
+  const VerificationScreen({super.key, required this.email});
 
   @override
-  State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
+  State<VerificationScreen> createState() => _VerificationScreenState();
 }
 
-class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
-  final TextEditingController _emailController = TextEditingController();
+class _VerificationScreenState extends State<VerificationScreen> {
+  final List<TextEditingController> _controllers = List.generate(
+    6,
+    (index) => TextEditingController(),
+  );
+  final List<FocusNode> _focusNodes = List.generate(6, (index) => FocusNode());
+
+  // Variabel untuk countdown
+  int _countdown = 30;
+  bool _isCountdownActive = true;
+  late Timer _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _startCountdown();
+  }
+
+  void _startCountdown() {
+    _countdown = 30;
+    _isCountdownActive = true;
+
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        if (_countdown > 0) {
+          _countdown--;
+        } else {
+          _isCountdownActive = false;
+          timer.cancel();
+        }
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -103,7 +137,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Title section dengan icon message.png dan container kotak
+                              // Title section
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -138,26 +172,22 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                       ],
                                     ),
                                     child: Center(
-                                      child: Container(
-                                        width: screenWidth * 0.06,
-                                        height: screenWidth * 0.06,
-                                        child: Icon(
-                                          Icons.email, // <- ikon amplop
-                                          color: Colors.white,
-                                          size: screenWidth * 0.06,
-                                        ),
+                                      child: Icon(
+                                        Icons.lock,
+                                        color: Colors.white,
+                                        size: screenWidth * 0.08,
                                       ),
                                     ),
                                   ),
-                                  SizedBox(width: 4),
-                                  // Teks di samping icon
+                                  SizedBox(width: 8),
+                                  // Text
                                   Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        "Reset",
+                                        "Enter",
                                         style: TextStyle(
                                           color: Colors.black,
                                           fontSize: screenWidth * 0.038,
@@ -170,13 +200,22 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                           left: screenWidth * 0.02,
                                         ),
                                         child: Text(
-                                          "Password",
+                                          "Verification",
                                           style: TextStyle(
                                             color: Colors.black,
                                             fontSize: screenWidth * 0.038,
                                             fontWeight: FontWeight.bold,
                                             height: 1.1,
                                           ),
+                                        ),
+                                      ),
+                                      Text(
+                                        "Code",
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: screenWidth * 0.038,
+                                          fontWeight: FontWeight.bold,
+                                          height: 1.1,
                                         ),
                                       ),
                                     ],
@@ -189,7 +228,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                               // Description text
                               Center(
                                 child: Text(
-                                  "Enter your email to receive a reset code",
+                                  "Enter the 6-digit code sent to your email",
                                   style: TextStyle(
                                     color: Colors.black,
                                     fontSize: screenWidth * 0.035,
@@ -201,12 +240,26 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
                               SizedBox(height: screenHeight * 0.02),
 
-                              // Email TextField
+                              // Email display
+                              Center(
+                                child: Text(
+                                  widget.email,
+                                  style: TextStyle(
+                                    color: Colors.blue,
+                                    fontSize: screenWidth * 0.035,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+
+                              SizedBox(height: screenHeight * 0.02),
+
+                              // OTP Input Fields
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   const Text(
-                                    "Email",
+                                    "Verification Code",
                                     style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.bold,
@@ -214,75 +267,79 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                     ),
                                   ),
                                   const SizedBox(height: 6),
-                                  Container(
-                                    height: 50,
-                                    decoration: BoxDecoration(
-                                      color: const Color.fromARGB(
-                                        255,
-                                        254,
-                                        254,
-                                        254,
-                                      ),
-                                      borderRadius: BorderRadius.circular(8),
-                                      border: Border.all(
-                                        color: const Color.fromARGB(
-                                          217,
-                                          217,
-                                          217,
-                                          255,
-                                        ),
-                                        width: 1,
-                                      ),
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Expanded(
-                                          child: TextField(
-                                            controller: _emailController,
-                                            style: const TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 16,
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: List.generate(6, (index) {
+                                      return SizedBox(
+                                        width: screenWidth * 0.12,
+                                        child: TextField(
+                                          controller: _controllers[index],
+                                          focusNode: _focusNodes[index],
+                                          textAlign: TextAlign.center,
+                                          keyboardType: TextInputType.number,
+                                          maxLength: 1,
+                                          style: const TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                          decoration: InputDecoration(
+                                            counterText: "",
+                                            contentPadding:
+                                                const EdgeInsets.symmetric(
+                                                  vertical: 12,
+                                                ),
+                                            border: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                              borderSide: const BorderSide(
+                                                color: Color.fromARGB(
+                                                  217,
+                                                  217,
+                                                  217,
+                                                  255,
+                                                ),
+                                              ),
                                             ),
-                                            decoration: InputDecoration(
-                                              border: InputBorder.none,
-                                              contentPadding:
-                                                  const EdgeInsets.symmetric(
-                                                    horizontal: 16,
-                                                    vertical: 12,
-                                                  ),
-                                              hintText:
-                                                  "Enter your email address",
-                                              hintStyle: TextStyle(
-                                                color: Colors.grey[500],
-                                                fontSize: 16,
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                              borderSide: const BorderSide(
+                                                color: Colors.blue,
                                               ),
                                             ),
                                           ),
+                                          onChanged: (value) {
+                                            if (value.length == 1 &&
+                                                index < 5) {
+                                              _focusNodes[index + 1]
+                                                  .requestFocus();
+                                            }
+                                            if (value.isEmpty && index > 0) {
+                                              _focusNodes[index - 1]
+                                                  .requestFocus();
+                                            }
+
+                                            // Check if all fields are filled
+                                            if (_isAllFieldsFilled()) {
+                                              _verifyCode();
+                                            }
+                                          },
                                         ),
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Image.asset(
-                                            "assets/images/auth/mail.png",
-                                            width: 20,
-                                            height: 20,
-                                            fit: BoxFit.contain,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                                      );
+                                    }),
                                   ),
                                 ],
                               ),
 
                               SizedBox(height: screenHeight * 0.02),
 
-                              // Send Reset Code button
+                              // Verify button
                               SizedBox(
                                 width: double.infinity,
                                 child: ElevatedButton(
-                                  onPressed: () {
-                                    _sendResetCode();
-                                  },
+                                  onPressed: _verifyCode,
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.black,
                                     foregroundColor: Colors.white,
@@ -297,93 +354,53 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  child: const Text("Send Reset Code"),
+                                  child: const Text("Verify Code"),
                                 ),
                               ),
 
                               SizedBox(height: screenHeight * 0.02),
 
-                              // Back to Login text
-                              Container(
-                                width: double.infinity,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => LoginScreen(),
-                                      ),
-                                    );
-                                  },
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(
-                                        Icons.arrow_back_ios_rounded,
-                                        color: Colors.black,
-                                        size: 20,
-                                        weight: 900,
-                                      ),
-                                      SizedBox(width: 8),
-                                      Text(
-                                        "Back To Login",
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        SizedBox(height: screenHeight * 0.03),
-
-                        // Teks dengan icon hint - DI LUAR CONTAINER FORM
-                        // Teks dengan icon hint - DI LUAR CONTAINER FORM
-                        Container(
-                          width: double.infinity,
-                          padding: EdgeInsets.symmetric(
-                            horizontal: screenWidth * 0.02,
-                          ),
-                          child: Column(
-                            crossAxisAlignment:
-                                CrossAxisAlignment.center, // biar center
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment
-                                    .center, // icon + teks center
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                              // Resend code section dengan countdown - DIUBAH
+                              Column(
                                 children: [
-                                  Icon(
-                                    Icons.error,
-                                    color: Colors
-                                        .black, // lingkaran hitam, tanda seru putih
-                                    size: screenWidth * 0.06,
-                                  ),
-
-                                  SizedBox(width: screenWidth * 0.02),
-                                  // Batasi lebar teks + justify
-                                  SizedBox(
-                                    width:
-                                        screenWidth *
-                                        0.6, // biar lebih sempit dan center
+                                  // Text "Didn't receive code?" - text biasa
+                                  Center(
                                     child: Text(
-                                      "We'll send you a secure reset code to your email address. "
-                                      "Check your inbox and follow the instructions to create a new password",
+                                      "Didn't receive code?",
                                       style: TextStyle(
                                         color: Colors.black,
-                                        fontSize: screenWidth * 0.032,
+                                        fontSize: screenWidth * 0.035,
                                         fontWeight: FontWeight.normal,
-                                        height: 1.4,
                                       ),
-                                      textAlign:
-                                          TextAlign.justify, // rata kiri kanan
                                     ),
+                                  ),
+                                  SizedBox(height: screenHeight * 0.01),
+
+                                  // Tombol "Resend" atau countdown text
+                                  Center(
+                                    child: _isCountdownActive
+                                        ? Text(
+                                            "Resend code in $_countdown seconds",
+                                            style: TextStyle(
+                                              color: Colors.grey[600],
+                                              fontSize: screenWidth * 0.035,
+                                              fontWeight: FontWeight.normal,
+                                            ),
+                                          )
+                                        : GestureDetector(
+                                            onTap: _resendCode,
+                                            child: Text(
+                                              "Resend Code",
+                                              style: TextStyle(
+                                                color: Colors.blue,
+                                                fontSize: screenWidth * 0.045,
+                                                fontWeight: FontWeight.normal,
+                                                fontStyle: FontStyle.italic,
+                                                decoration:
+                                                    TextDecoration.underline,
+                                              ),
+                                            ),
+                                          ),
                                   ),
                                 ],
                               ),
@@ -394,8 +411,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     ),
                   ),
                 ),
-
-                // Help section
                 Container(
                   width: double.infinity,
                   child: Column(
@@ -436,32 +451,37 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     );
   }
 
-  void _sendResetCode() {
-    final email = _emailController.text.trim();
-
-    if (email.isEmpty) {
-      _showSnackBar("Please enter your email address");
-      return;
-    }
-
-    if (!_isValidEmail(email)) {
-      _showSnackBar("Please enter a valid email address");
-      return;
-    }
-
-    // Navigate to verification screen
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => VerificationScreen(email: email)),
-    );
-
-    // Show success message
-    _showSnackBar("Reset code has been sent to your email");
+  bool _isAllFieldsFilled() {
+    return _controllers.every((controller) => controller.text.isNotEmpty);
   }
 
-  bool _isValidEmail(String email) {
-    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-    return emailRegex.hasMatch(email);
+  void _verifyCode() {
+    final code = _controllers.map((controller) => controller.text).join();
+
+    if (code.length != 6) {
+      _showSnackBar("Please enter the complete 6-digit code");
+      return;
+    }
+
+    // Implement your verification logic here
+    // For now, just navigate to new password screen
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            NewPasswordScreen(email: widget.email, verificationCode: code),
+      ),
+    );
+  }
+
+  void _resendCode() {
+    if (!_isCountdownActive) {
+      // Reset countdown
+      _startCountdown();
+
+      // Implement resend code logic here
+      _showSnackBar("Verification code has been resent to ${widget.email}");
+    }
   }
 
   void _showSnackBar(String message) {
@@ -476,7 +496,15 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
   @override
   void dispose() {
-    _emailController.dispose();
+    // Cancel timer ketika widget di dispose
+    _timer.cancel();
+
+    for (var controller in _controllers) {
+      controller.dispose();
+    }
+    for (var focusNode in _focusNodes) {
+      focusNode.dispose();
+    }
     super.dispose();
   }
 }

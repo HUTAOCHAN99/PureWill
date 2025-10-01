@@ -1,8 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:purewill/screen/auth/register_screen.dart';
+import 'package:purewill/screen/auth/resetpassword_screen.dart'; // Import reset password screen
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  bool _obscurePassword = true;
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -25,8 +35,8 @@ class LoginScreen extends StatelessWidget {
             child: Column(
               children: [
                 // Logo section
-                Expanded(
-                  flex: 2,
+                Container(
+                  height: screenHeight * 0.25,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -38,7 +48,7 @@ class LoginScreen extends StatelessWidget {
                           color: Colors.transparent,
                           border: Border.all(
                             color: const Color.fromRGBO(102, 121, 163, 1),
-                            width: 1,
+                            width: 1.5,
                           ),
                         ),
                         child: Center(
@@ -49,8 +59,8 @@ class LoginScreen extends StatelessWidget {
                             ),
                             child: Image.asset(
                               "assets/images/auth/icon.png",
-                              width: screenWidth * 0.18,
-                              height: screenWidth * 0.18,
+                              width: screenWidth * 0.24,
+                              height: screenWidth * 0.24,
                               fit: BoxFit.contain,
                             ),
                           ),
@@ -70,27 +80,25 @@ class LoginScreen extends StatelessWidget {
                   ),
                 ),
 
-                SizedBox(
-                  height: screenHeight * 0.08,
-                ), // Spacing between logo and form
-                // Form section
+                SizedBox(height: screenHeight * 0.05),
+
+                // Form section - bagian yang bisa di-scroll
                 Expanded(
-                  flex: 3,
-                  child: Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.all(screenWidth * 0.05),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.9),
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: SingleChildScrollView(
+                  child: SingleChildScrollView(
+                    child: Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.all(screenWidth * 0.05),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.9),
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -102,7 +110,7 @@ class LoginScreen extends StatelessWidget {
                               // Icon container
                               Container(
                                 width: screenWidth * 0.15,
-                                height: screenWidth * 0.15,
+                                height: screenWidth * 0.12,
                                 decoration: BoxDecoration(
                                   color: const Color.fromRGBO(82, 140, 207, 1),
                                   borderRadius: BorderRadius.circular(16),
@@ -125,8 +133,8 @@ class LoginScreen extends StatelessWidget {
                                 ),
                                 child: Center(
                                   child: Container(
-                                    width: screenWidth * 0.08,
-                                    height: screenWidth * 0.08,
+                                    width: screenWidth * 0.06,
+                                    height: screenWidth * 0.06,
                                     child: Image.asset(
                                       "assets/images/auth/icon_walk.png",
                                       fit: BoxFit.contain,
@@ -134,9 +142,7 @@ class LoginScreen extends StatelessWidget {
                                   ),
                                 ),
                               ),
-                              SizedBox(
-                                width: 12,
-                              ), // Spacing antara icon dan teks
+                              SizedBox(width: 4),
                               // Teks di samping icon
                               Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -151,13 +157,18 @@ class LoginScreen extends StatelessWidget {
                                       height: 1.1,
                                     ),
                                   ),
-                                  Text(
-                                    "Continue",
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: screenWidth * 0.038,
-                                      fontWeight: FontWeight.bold,
-                                      height: 1.1,
+                                  Padding(
+                                    padding: EdgeInsets.only(
+                                      left: screenWidth * 0.02,
+                                    ),
+                                    child: Text(
+                                      "Continue",
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: screenWidth * 0.038,
+                                        fontWeight: FontWeight.bold,
+                                        height: 1.1,
+                                      ),
                                     ),
                                   ),
                                   Text(
@@ -176,7 +187,7 @@ class LoginScreen extends StatelessWidget {
 
                           SizedBox(height: screenHeight * 0.02),
 
-                          // Email TextField dengan icon di kanan
+                          // Email TextField
                           Container(
                             height: 40,
                             decoration: BoxDecoration(
@@ -191,17 +202,20 @@ class LoginScreen extends StatelessWidget {
                               children: [
                                 Expanded(
                                   child: TextField(
+                                    controller: _emailController,
                                     style: const TextStyle(
                                       color: Colors.black,
                                       fontSize: 16,
                                     ),
                                     decoration: InputDecoration(
                                       border: InputBorder.none,
-                                      contentPadding:
-                                          const EdgeInsets.symmetric(
-                                            horizontal: 16,
-                                            vertical: 8,
-                                          ),
+                                      isCollapsed:
+                                          true, // 🔑 bikin teks lebih sejajar
+                                      contentPadding: const EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                        vertical:
+                                            10, // sesuaikan supaya sejajar dengan icon
+                                      ),
                                       hintText: "Enter your email address",
                                       hintStyle: TextStyle(
                                         color: Colors.grey[500],
@@ -210,12 +224,14 @@ class LoginScreen extends StatelessWidget {
                                     ),
                                   ),
                                 ),
+
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
-                                  child: Icon(
-                                    Icons.email,
-                                    color: Colors.grey[600],
-                                    size: 18,
+                                  child: Image.asset(
+                                    "assets/images/auth/mail.png",
+                                    width: 18,
+                                    height: 18,
+                                    fit: BoxFit.contain,
                                   ),
                                 ),
                               ],
@@ -224,7 +240,7 @@ class LoginScreen extends StatelessWidget {
 
                           SizedBox(height: 16),
 
-                          // Password TextField dengan icon di kanan
+                          // Password TextField
                           Container(
                             height: 40,
                             decoration: BoxDecoration(
@@ -239,19 +255,22 @@ class LoginScreen extends StatelessWidget {
                               children: [
                                 Expanded(
                                   child: TextField(
-                                    obscureText: true,
+                                    controller: _passwordController,
+                                    obscureText: _obscurePassword,
                                     style: const TextStyle(
                                       color: Colors.black,
                                       fontSize: 16,
                                     ),
                                     decoration: InputDecoration(
                                       border: InputBorder.none,
-                                      contentPadding:
-                                          const EdgeInsets.symmetric(
-                                            horizontal: 16,
-                                            vertical: 8,
-                                          ),
-                                      hintText: "Create a Password",
+                                      isCollapsed:
+                                          true, // 🔑 biar tinggi field sesuai isi
+                                      contentPadding: const EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                        vertical:
+                                            10, // sesuaikan biar sejajar dengan icon
+                                      ),
+                                      hintText: "Enter your password",
                                       hintStyle: TextStyle(
                                         color: Colors.grey[500],
                                         fontSize: 16,
@@ -259,12 +278,21 @@ class LoginScreen extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Icon(
-                                    Icons.lock,
-                                    color: Colors.grey[600],
-                                    size: 18,
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      _obscurePassword = !_obscurePassword;
+                                    });
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Icon(
+                                      _obscurePassword
+                                          ? Icons.visibility_off
+                                          : Icons.visibility,
+                                      color: Colors.black,
+                                      size: 20,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -273,19 +301,31 @@ class LoginScreen extends StatelessWidget {
 
                           SizedBox(height: 8),
 
-                          // Forgot Password
+                          // Forgot Password - TAMBAHKAN NAVIGASI KE RESET PASSWORD
                           Align(
                             alignment: Alignment.centerRight,
                             child: GestureDetector(
                               onTap: () {
-                                // Forgot password logic
+                                // Navigate to Reset Password Screen
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ResetPasswordScreen(),
+                                  ),
+                                );
                               },
                               child: const Text(
                                 "Forgot Password?",
                                 style: TextStyle(
-                                  color: Colors.black,
+                                  color: Color.fromRGBO(82, 140, 207, 1),
                                   fontSize: 12,
                                   decoration: TextDecoration.underline,
+                                  decorationColor: Color.fromRGBO(
+                                    82,
+                                    140,
+                                    207,
+                                    1,
+                                  ),
                                 ),
                               ),
                             ),
@@ -298,7 +338,7 @@ class LoginScreen extends StatelessWidget {
                             width: double.infinity,
                             child: ElevatedButton(
                               onPressed: () {
-                                // Login logic
+                                _login();
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.black,
@@ -343,12 +383,7 @@ class LoginScreen extends StatelessWidget {
                                 child: const Text(
                                   "Register",
                                   style: TextStyle(
-                                    color: Color.fromRGBO(
-                                      82,
-                                      140,
-                                      207,
-                                      1,
-                                    ), // warna teks
+                                    color: Color.fromRGBO(82, 140, 207, 1),
                                     fontWeight: FontWeight.bold,
                                     fontSize: 14,
                                     decoration: TextDecoration.underline,
@@ -357,7 +392,7 @@ class LoginScreen extends StatelessWidget {
                                       140,
                                       207,
                                       1,
-                                    ), // warna underline
+                                    ),
                                   ),
                                 ),
                               ),
@@ -368,11 +403,14 @@ class LoginScreen extends StatelessWidget {
                     ),
                   ),
                 ),
+
+                SizedBox(height: screenHeight * 0.05),
+
                 // Help section
-                Expanded(
-                  flex: 1,
+                Container(
+                  width: double.infinity,
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
                         "Need help?",
@@ -386,15 +424,15 @@ class LoginScreen extends StatelessWidget {
                       GestureDetector(
                         onTap: () {
                           // Contact support logic
-                          print("Contact support tapped");
                         },
                         child: Text(
                           "Contact support",
                           style: TextStyle(
-                            color: Colors.black,
+                            color: Color.fromRGBO(82, 140, 207, 1),
                             fontSize: screenWidth * 0.038,
                             fontWeight: FontWeight.bold,
                             decoration: TextDecoration.underline,
+                            decorationColor: Color.fromRGBO(82, 140, 207, 1),
                           ),
                         ),
                       ),
@@ -407,5 +445,42 @@ class LoginScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _login() {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (email.isEmpty) {
+      _showSnackBar("Please enter your email address");
+      return;
+    }
+
+    if (password.isEmpty) {
+      _showSnackBar("Please enter your password");
+      return;
+    }
+
+    // Implement your login logic here
+
+    // Show success message
+    _showSnackBar("Login successful!");
+  }
+
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: const Duration(seconds: 3),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 }
