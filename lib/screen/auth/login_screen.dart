@@ -1,7 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+  
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+  
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final supabaseCLient = Supabase.instance.client;
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  String _email = '';
+  String _password = '';
+
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> logIn() async {
+    try {
+      await supabaseCLient.auth.signInWithPassword(email: _email, password: _password);
+
+    } on AuthException catch (e) {
+      debugPrint(e.message);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,8 +119,11 @@ class LoginScreen extends StatelessWidget {
 
                       // Email field
                       const Text(
+  
                         "Enter your email address",
+              
                         style: TextStyle(color: Colors.black, fontSize: 14),
+                        
                       ),
 
                       SizedBox(height: screenHeight * 0.01),
@@ -105,6 +139,11 @@ class LoginScreen extends StatelessWidget {
                           ),
                         ),
                         child: TextField(
+                          onChanged: (value) {
+                            setState((){
+                              _email = value;
+                            });
+                          },
                           style: const TextStyle(
                             color: Colors.black,
                             fontSize: 16,
@@ -147,6 +186,11 @@ class LoginScreen extends StatelessWidget {
                           ),
                         ),
                         child: TextField(
+                          onChanged: (String value) {
+                            setState((){
+                              _password = value;
+                            });
+                          },
                           obscureText: true,
                           style: const TextStyle(
                             color: Colors.black,
@@ -196,7 +240,7 @@ class LoginScreen extends StatelessWidget {
                         width: double.infinity,
                         child: ElevatedButton(
                           onPressed: () {
-                            // Login logic
+                            logIn();
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.black,
