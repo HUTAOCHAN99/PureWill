@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:purewill/screen/auth/login_screen.dart';
+import 'package:purewill/screen/auth/splash_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:purewill/screen/auth/register_screen.dart';
 import 'package:purewill/screen/auth/resetpassword_screen.dart';
@@ -22,8 +23,8 @@ class MyApp extends StatelessWidget {
       title: 'PureWill',
       theme: ThemeData(
         primarySwatch: Colors.blue,
-      ),
-      home: LoginScreen(),
+      ) ,
+      home: SplashScreen(),
       routes: {
         '/login': (context) => LoginScreen(),
         '/register': (context) => RegisterScreen(),
