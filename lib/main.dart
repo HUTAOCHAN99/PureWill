@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:purewill/screen/auth/login_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:purewill/screen/auth/register_screen.dart';
+import 'package:purewill/screen/auth/resetpassword_screen.dart';
 
 
 Future<void> main() async {
@@ -22,6 +24,11 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: LoginScreen(),
+      routes: {
+        '/login': (context) => LoginScreen(),
+        '/register': (context) => RegisterScreen(),
+        '/reset-password': (context) => ResetPasswordScreen(), // Tambah route
+      },
     );
   }
 }
