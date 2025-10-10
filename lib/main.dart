@@ -1,10 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:purewill/screen/auth/login_screen.dart';
 import 'package:purewill/screen/auth/register_screen.dart';
-import 'package:purewill/screen/auth/resetpassword_screen.dart'; 
+import 'package:purewill/screen/auth/resetpassword_screen.dart';
 
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
 
-void main() {
+  // Load .env file
+  await dotenv.load(fileName: ".env");
+
+  // Inisialisasi Supabase
+  await Supabase.initialize(
+    url: dotenv.env['SUPABASE_URL']!,
+    anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
+  );
+
   runApp(const MyApp());
 }
 
@@ -18,11 +30,11 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: LoginScreen(),
+      home: const LoginScreen(),
       routes: {
-        '/login': (context) => LoginScreen(),
-        '/register': (context) => RegisterScreen(),
-        '/reset-password': (context) => ResetPasswordScreen(), // Tambah route
+        '/login': (context) => const LoginScreen(),
+        '/register': (context) => const RegisterScreen(),
+        '/reset-password': (context) => const ResetPasswordScreen(),
       },
     );
   }

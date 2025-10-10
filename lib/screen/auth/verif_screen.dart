@@ -1,12 +1,21 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'newpassword_screen.dart';
+import 'package:purewill/screen/auth/newpassword_screen.dart';
+import 'package:purewill/screen/home/home_screen.dart';
+import 'package:purewill/services/auth_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+enum VerificationType { registration, resetPassword }
 
 class VerificationScreen extends StatefulWidget {
   final String email;
+  final VerificationType type;
 
-  const VerificationScreen({super.key, required this.email});
+  const VerificationScreen({
+    super.key,
+    required this.email,
+    this.type = VerificationType.registration,
+  });
 
   @override
   State<VerificationScreen> createState() => _VerificationScreenState();
@@ -18,16 +27,25 @@ class _VerificationScreenState extends State<VerificationScreen> {
     (index) => TextEditingController(),
   );
   final List<FocusNode> _focusNodes = List.generate(6, (index) => FocusNode());
+  final AuthService _authService = AuthService();
 
-  // Variabel untuk countdown
   int _countdown = 30;
   bool _isCountdownActive = true;
+  bool _isVerifying = false;
   late Timer _timer;
 
   @override
   void initState() {
     super.initState();
     _startCountdown();
+
+    for (int i = 0; i < _focusNodes.length; i++) {
+      _focusNodes[i].addListener(() {
+        if (_focusNodes[i].hasFocus && _controllers[i].text.isEmpty) {
+          _controllers[i].selection = TextSelection.collapsed(offset: 0);
+        }
+      });
+    }
   }
 
   void _startCountdown() {
@@ -119,7 +137,6 @@ class _VerificationScreenState extends State<VerificationScreen> {
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
-                        // Container form
                         Container(
                           width: double.infinity,
                           padding: EdgeInsets.all(screenWidth * 0.05),
@@ -137,12 +154,11 @@ class _VerificationScreenState extends State<VerificationScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Title section
+                              // Header
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  // Icon container
                                   Container(
                                     width: screenWidth * 0.15,
                                     height: screenWidth * 0.12,
@@ -160,12 +176,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
                                       ),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: const Color.fromARGB(
-                                            255,
-                                            0,
-                                            0,
-                                            0,
-                                          ).withOpacity(0.1),
+                                          color: Colors.black.withOpacity(0.1),
                                           blurRadius: 8,
                                           offset: const Offset(0, 2),
                                         ),
@@ -180,42 +191,29 @@ class _VerificationScreenState extends State<VerificationScreen> {
                                     ),
                                   ),
                                   SizedBox(width: 8),
-                                  // Text
                                   Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         "Enter",
                                         style: TextStyle(
-                                          color: Colors.black,
                                           fontSize: screenWidth * 0.038,
                                           fontWeight: FontWeight.bold,
-                                          height: 1.1,
                                         ),
                                       ),
-                                      Padding(
-                                        padding: EdgeInsets.only(
-                                          left: screenWidth * 0.02,
-                                        ),
-                                        child: Text(
-                                          "Verification",
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: screenWidth * 0.038,
-                                            fontWeight: FontWeight.bold,
-                                            height: 1.1,
-                                          ),
+                                      Text(
+                                        "Verification",
+                                        style: TextStyle(
+                                          fontSize: screenWidth * 0.038,
+                                          fontWeight: FontWeight.bold,
                                         ),
                                       ),
                                       Text(
                                         "Code",
                                         style: TextStyle(
-                                          color: Colors.black,
                                           fontSize: screenWidth * 0.038,
                                           fontWeight: FontWeight.bold,
-                                          height: 1.1,
                                         ),
                                       ),
                                     ],
@@ -225,36 +223,29 @@ class _VerificationScreenState extends State<VerificationScreen> {
 
                               SizedBox(height: screenHeight * 0.02),
 
-                              // Description text
                               Center(
                                 child: Text(
                                   "Enter the 6-digit code sent to your email",
                                   style: TextStyle(
-                                    color: Colors.black,
                                     fontSize: screenWidth * 0.035,
-                                    fontWeight: FontWeight.normal,
                                   ),
                                   textAlign: TextAlign.center,
                                 ),
                               ),
-
                               SizedBox(height: screenHeight * 0.02),
-
-                              // Email display
                               Center(
                                 child: Text(
                                   widget.email,
                                   style: TextStyle(
-                                    color: Colors.blue,
+                                    color: Color.fromRGBO(82, 140, 207, 1),
                                     fontSize: screenWidth * 0.035,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                               ),
-
                               SizedBox(height: screenHeight * 0.02),
 
-                              // OTP Input Fields
+                              // OTP Input
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -320,11 +311,8 @@ class _VerificationScreenState extends State<VerificationScreen> {
                                               _focusNodes[index - 1]
                                                   .requestFocus();
                                             }
-
-                                            // Check if all fields are filled
-                                            if (_isAllFieldsFilled()) {
+                                            if (_isAllFieldsFilled())
                                               _verifyCode();
-                                            }
                                           },
                                         ),
                                       );
@@ -339,7 +327,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
                               SizedBox(
                                 width: double.infinity,
                                 child: ElevatedButton(
-                                  onPressed: _verifyCode,
+                                  onPressed: _isVerifying ? null : _verifyCode,
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.black,
                                     foregroundColor: Colors.white,
@@ -349,34 +337,39 @@ class _VerificationScreenState extends State<VerificationScreen> {
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(8),
                                     ),
-                                    textStyle: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
                                   ),
-                                  child: const Text("Verify Code"),
+                                  child: _isVerifying
+                                      ? const SizedBox(
+                                          height: 20,
+                                          width: 20,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                          ),
+                                        )
+                                      : const Text(
+                                          "Verify Code",
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
                                 ),
                               ),
 
                               SizedBox(height: screenHeight * 0.02),
 
-                              // Resend code section dengan countdown - DIUBAH
+                              // Resend code
                               Column(
                                 children: [
-                                  // Text "Didn't receive code?" - text biasa
                                   Center(
                                     child: Text(
                                       "Didn't receive code?",
                                       style: TextStyle(
-                                        color: Colors.black,
                                         fontSize: screenWidth * 0.035,
-                                        fontWeight: FontWeight.normal,
                                       ),
                                     ),
                                   ),
                                   SizedBox(height: screenHeight * 0.01),
-
-                                  // Tombol "Resend" atau countdown text
                                   Center(
                                     child: _isCountdownActive
                                         ? Text(
@@ -384,7 +377,6 @@ class _VerificationScreenState extends State<VerificationScreen> {
                                             style: TextStyle(
                                               color: Colors.grey[600],
                                               fontSize: screenWidth * 0.035,
-                                              fontWeight: FontWeight.normal,
                                             ),
                                           )
                                         : GestureDetector(
@@ -392,10 +384,14 @@ class _VerificationScreenState extends State<VerificationScreen> {
                                             child: Text(
                                               "Resend Code",
                                               style: TextStyle(
-                                                color: Colors.blue,
-                                                fontSize: screenWidth * 0.045,
-                                                fontWeight: FontWeight.normal,
-                                                fontStyle: FontStyle.italic,
+                                                color: Color.fromRGBO(
+                                                  82,
+                                                  140,
+                                                  207,
+                                                  1,
+                                                ),
+                                                fontSize: screenWidth * 0.038,
+                                                fontWeight: FontWeight.bold,
                                                 decoration:
                                                     TextDecoration.underline,
                                               ),
@@ -411,24 +407,21 @@ class _VerificationScreenState extends State<VerificationScreen> {
                     ),
                   ),
                 ),
+
+                // Help section
                 Container(
-                  width: double.infinity,
                   child: Column(
-                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
                         "Need help?",
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: screenWidth * 0.035,
-                          fontWeight: FontWeight.w400,
                         ),
                       ),
                       SizedBox(height: 4),
                       GestureDetector(
-                        onTap: () {
-                          // Contact support logic
-                        },
+                        onTap: () {},
                         child: Text(
                           "Contact support",
                           style: TextStyle(
@@ -436,7 +429,6 @@ class _VerificationScreenState extends State<VerificationScreen> {
                             fontSize: screenWidth * 0.038,
                             fontWeight: FontWeight.bold,
                             decoration: TextDecoration.underline,
-                            decorationColor: Colors.black,
                           ),
                         ),
                       ),
@@ -451,60 +443,98 @@ class _VerificationScreenState extends State<VerificationScreen> {
     );
   }
 
-  bool _isAllFieldsFilled() {
-    return _controllers.every((controller) => controller.text.isNotEmpty);
-  }
+  bool _isAllFieldsFilled() =>
+      _controllers.every((controller) => controller.text.isNotEmpty);
 
-  void _verifyCode() {
+  void _verifyCode() async {
     final code = _controllers.map((controller) => controller.text).join();
-
     if (code.length != 6) {
       _showSnackBar("Please enter the complete 6-digit code");
       return;
     }
 
-    // Implement your verification logic here
-    // For now, just navigate to new password screen
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) =>
-            NewPasswordScreen(email: widget.email, verificationCode: code),
-      ),
-    );
+    setState(() => _isVerifying = true);
+
+    try {
+      if (widget.type == VerificationType.registration) {
+        // VERIFIKASI OTP UNTUK SIGNUP
+        final response = await _authService.verifySignupOtp(
+          email: widget.email,
+          otp: code,
+        );
+
+        if (response.user != null) {
+          _showSnackBar(
+            "Email verified successfully! Your account is now active.",
+          );
+
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => HomeScreen()),
+            (route) => false,
+          );
+        }
+      } else {
+        // VERIFIKASI OTP UNTUK RESET PASSWORD
+        final response = await _authService.verifyPasswordResetOtp(
+          email: widget.email,
+          otp: code,
+        );
+
+        if (response.user != null) {
+          _showSnackBar(
+            "Verification successful! You can now set your new password.",
+          );
+
+          // Navigate to new password screen
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => NewPasswordScreen(
+                email: widget.email,
+                verificationCode: code,
+              ),
+            ),
+          );
+        }
+      }
+    } on AuthException catch (e) {
+      _showSnackBar("Verification failed: ${e.message}");
+    } catch (e) {
+      _showSnackBar("An error occurred during verification");
+    } finally {
+      if (mounted) setState(() => _isVerifying = false);
+    }
   }
 
-  void _resendCode() {
+  void _resendCode() async {
     if (!_isCountdownActive) {
-      // Reset countdown
       _startCountdown();
-
-      // Implement resend code logic here
-      _showSnackBar("Verification code has been resent to ${widget.email}");
+      try {
+        if (widget.type == VerificationType.registration) {
+          await _authService.resendSignupOtp(widget.email);
+          _showSnackBar("Verification code has been resent to ${widget.email}");
+        } else {
+          await _authService.resendPasswordResetOtp(widget.email);
+          _showSnackBar("Reset code has been resent to ${widget.email}");
+        }
+      } catch (e) {
+        _showSnackBar("Failed to resend code: $e");
+      }
     }
   }
 
   void _showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        duration: const Duration(seconds: 3),
-        behavior: SnackBarBehavior.floating,
-      ),
+      SnackBar(content: Text(message), duration: const Duration(seconds: 4)),
     );
   }
 
   @override
   void dispose() {
-    // Cancel timer ketika widget di dispose
     _timer.cancel();
-
-    for (var controller in _controllers) {
-      controller.dispose();
-    }
-    for (var focusNode in _focusNodes) {
-      focusNode.dispose();
-    }
+    for (var controller in _controllers) controller.dispose();
+    for (var focusNode in _focusNodes) focusNode.dispose();
     super.dispose();
   }
 }
